@@ -9,12 +9,16 @@ with open(file_ques, "r", encoding="utf-8") as f:
         data_question.append(json.loads(line))
 
 business ={bid["business_id"]:0 for bid in data_question}
-print(f"Number of unique business IDs: {len(business)}")
 
 for b_id in data_question:
-    if(b_id["business_id"] in business):
         business[b_id["business_id"]] +=1
-print(business)
+
+check_only = {"1":set() , "2": set(), "3" : set(), "4":set()}
+id_business = {}
+for key in data_question:
+    id_business[key["id"]] = id_business.get(key["id"],0) + 1
+    if(id_business[key["id"]]> 1): 
+         check_only["1"].add(key["id"])
 
 data_answer = Path(__file__).resolve().parent
 file_ans = data_answer.parent/"train"/"train"/"answers.jsonl"
@@ -27,5 +31,12 @@ with open(file_ans,"r",encoding="utf-8") as f:
 
 type_count = {type_q["type"]:0 for type_q in data_ans}
 for type_q in data_ans:
-    if(type_q["type"] in type_count): type_count[type_q["type"]] +=1
-print(type_count)
+    type_count[type_q["type"]] +=1
+
+id_answer = {}
+for key in data_ans:
+    id_answer[key["id"]] = id_answer.get(key["id"],0) + 1
+    if(id_answer[key["id"]] > 1): 
+        check_only["2"].add(key["id"])
+print(set(id_business) - set(id_answer))
+print(set(id_answer) - set(id_business))
