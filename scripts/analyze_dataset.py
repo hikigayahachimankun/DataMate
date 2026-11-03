@@ -12,7 +12,7 @@ business ={bid["business_id"]:0 for bid in data_question}
 
 for b_id in data_question:
         business[b_id["business_id"]] +=1
-
+print(business)
 check_only = {"1":set() , "2": set(), "3" : set(), "4":set()}
 id_business = {}
 for key in data_question:
@@ -38,5 +38,3 @@ for key in data_ans:
     id_answer[key["id"]] = id_answer.get(key["id"],0) + 1
     if(id_answer[key["id"]] > 1): 
         check_only["2"].add(key["id"])
-print(set(id_business) - set(id_answer))
-print(set(id_answer) - set(id_business))
