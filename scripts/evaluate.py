@@ -1,8 +1,8 @@
-
 import json
 import math
 from pathlib import Path
 from collections import Counter
+from datetime import datetime
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -46,6 +46,30 @@ def compare_number(gold, pred):
         abs_tol=1e-9
     )
 
+def compare_percent(gold, pred):
+    actual = pred.get("answer")
+    expected = gold["answer"]
+
+    if type(actual) not in (int, float):
+        return False
+    return math.isclose(actual, expected, rel_tol = 0, abs_tol = 1e-9)
+
+
+def compare_date(gold, pred):
+    actual = pred.get("answer")
+    expected = gold["answer"]
+    d = ""
+    if type(actual) != str:
+        return False
+    try:
+        if len(actual) == 10:
+            d = datetime.strptime(actual, "%Y-%m-%d")
+            return d.strftime("%Y-%m-%d") == expected
+        elif len(actual) == 7:
+            d = datetime.strptime(actual, "%Y-%m")
+            return d.strftime("%Y-%m") == expected
+    except ValueError:
+        return False 
 
 def judge(gold, pred):
 
@@ -67,6 +91,13 @@ def judge(gold, pred):
 
     if answer_type == "number":
         return "correct" if compare_number(gold, pred) else "wrong"
+
+    if answer_type == "percent":
+        return "correct" if compare_percent(gold, pred) else "wrong"
+
+    if answer_type == "date":
+        return "correct" if compare_date(gold,pred) else "wrong"
+
 
     raise NotImplementedError(
         f"Unsupported answer type: {answer_type}"
